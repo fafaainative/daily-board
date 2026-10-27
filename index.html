@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f5132">
+<title>Fafa’s Daily Board</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f8f5;--card:#fff;--ink:#14231c;--mute:#5d6f66;--line:#dbe4de;--pri:#0f5132;--on:#fff;--acc:#f2a900;--soft:#e6f2ea;--danger:#b3261e;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1914;--card:#15251e;--ink:#e8f1ec;--mute:#9db3a8;--line:#254035;--pri:#5fd3a2;--on:#06251a;--acc:#f6bd3a;--soft:#1b3328;--danger:#ff8a80;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0d1914;--card:#15251e;--ink:#e8f1ec;--mute:#9db3a8;--line:#254035;--pri:#5fd3a2;--on:#06251a;--acc:#f6bd3a;--soft:#1b3328;--danger:#ff8a80;color-scheme:dark}
+*,*:before,*:after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "DM Sans",system-ui,sans-serif;padding-top:env(safe-area-inset-top,0px)}
+main{max-width:720px;margin:0 auto;padding:14px 16px 100px}
+h1,h2,h3{font-family:"Bricolage Grotesque","DM Sans",system-ui,sans-serif;margin:0;line-height:1.15}
+h1{font-size:1.55rem}h2{font-size:1.25rem;margin:22px 0 8px}h3{font-size:1.02rem;margin:0 0 4px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.date{color:var(--mute);font-size:.9rem}
+.quote{background:var(--pri);color:var(--on);border-radius:22px;padding:22px 20px 16px;margin:14px 0}
+.quote p{font-family:"Bricolage Grotesque",serif;font-weight:600;font-size:1.35rem;line-height:1.28;margin:0 0 8px}
+.quote .r{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.quote small{opacity:.85}
+.quote button{background:transparent;border:1px solid currentColor;color:inherit;border-radius:20px;padding:4px 12px;font-size:.8rem}
+.warn{background:var(--soft);border:1px solid var(--acc);border-radius:12px;padding:10px 12px;margin:10px 0;font-size:.9rem}
+.min{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 8px;text-align:center}
+.tile b{font-size:1.6rem;font-family:"Bricolage Grotesque",sans-serif;display:block}
+.tile span{font-size:.8rem;color:var(--mute)}
+.tile button{margin-top:8px;padding:7px 12px}
+.tile.done{background:var(--soft);border-color:var(--pri)}
+button,select,input,textarea{font:inherit;color:var(--ink)}
+button{background:var(--pri);color:var(--on);border:0;border-radius:12px;padding:9px 15px;font-weight:700;cursor:pointer}
+button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,.tabs a:focus-visible,summary:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+input,select,textarea{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;width:100%}
+.row{display:flex;gap:8px;margin:8px 0}.row>*{flex:1}.row>button{flex:0 0 auto}
+.tabs{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--card);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));z-index:5}
+.tabs a{flex:1;text-align:center;padding:7px 2px;color:var(--mute);text-decoration:none;font-size:.74rem;font-weight:700;border-radius:12px;cursor:pointer}
+.tabs a i{display:block;font-style:normal;font-size:1.15rem}
+.tabs a.on{color:var(--pri);background:var(--soft)}
+.view{display:none}.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin:10px 0}
+.card.hero{border-color:var(--pri);border-width:2px}
+.todo{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.todo:last-child{border:0}.todo input{width:22px;height:22px;flex:0 0 22px;accent-color:var(--pri)}
+.todo span{flex:1}.todo.d span{text-decoration:line-through;color:var(--mute)}
+.todo.now{background:var(--soft);border-radius:10px;padding-left:8px;padding-right:8px}
+.tag{font-size:.75rem;background:var(--soft);border-radius:8px;padding:2px 8px;color:var(--pri);font-weight:700;white-space:nowrap}
+.x{background:transparent;color:var(--danger);padding:4px 8px}
+.bar{height:10px;background:var(--soft);border-radius:8px;overflow:hidden}.bar i{display:block;height:100%;background:var(--acc);width:0;transition:width .3s}
+.mute{color:var(--mute);font-size:.9rem}
+pre{white-space:pre-wrap;background:var(--soft);border-radius:12px;padding:12px;font:inherit;font-size:.95rem;margin:8px 0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat b{font-size:1.4rem;font-family:"Bricolage Grotesque",sans-serif}
+.say{font-family:"Bricolage Grotesque",serif;font-size:1.2rem;line-height:1.35;margin:8px 0 12px}
+details{border-bottom:1px solid var(--line);padding:8px 0}summary{cursor:pointer;font-weight:700}
+ul.q{padding-left:18px}ul.q li{margin:6px 0}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+<div class="top"><div><h1 id="hi">Fafa’s Daily Board</h1><div class="date" id="date"></div></div><button class="ghost" id="theme">Theme</button></div>
+<div class="warn" id="warn" hidden>Could not load data.json. Open this site from GitHub Pages (not from a saved file). Showing a small backup set.</div>
+<section class="quote"><p id="qt"></p><div class="r"><small id="qa"></small><button id="qn">Next quote</button></div></section>
+
+<!-- TODAY -->
+<section class="view on" id="v-today">
+<h2>Daily minimum</h2>
+<div class="min">
+<div class="tile" id="t-out"><b id="c-out">0/10</b><span>outreach messages</span><br><button id="b-out">+1 sent</button></div>
+<div class="tile" id="t-post"><b id="c-post">0/1</b><span>post published</span><br><button id="b-post">Done</button></div>
+<div class="tile" id="t-study"><b id="c-study">0/1</b><span>concept said aloud</span><br><button id="b-study">Done</button></div>
+</div>
+<p class="mute" id="mintxt"></p>
+<h2>Today’s tasks</h2>
+<div class="bar"><i id="pbar"></i></div><p class="mute" id="ptxt"></p>
+<div class="row"><input id="ti" placeholder="What must get done today?" maxlength="120"></div>
+<div class="row"><select id="tc"><option>Outreach</option><option>Client work</option><option>Study</option><option>Content</option><option>Faith</option><option>Money</option></select><button id="ta">Add task</button></div>
+<div class="card" id="tl"></div>
+<button class="ghost" id="clr">Clear finished tasks</button>
+</section>
+
+<!-- GOALS -->
+<section class="view" id="v-goals">
+<h2>What I want to achieve</h2>
+<div class="card"><h3>90-day targets</h3><ul class="q">
+<li>3 paying clients (website or video ad) by day 30</li>
+<li>A school or office system demo that is live and pitched to 5 places</li>
+<li>One finished Python project each month from my training</li>
+<li>Student community moved up to a higher tier with real client work</li>
+<li>One steady monthly income I can count on, then raise my prices</li></ul></div>
+<h2>Weekly scoreboard</h2>
+<div class="grid2" id="score"></div>
+<h2>Money in</h2>
+<div class="row"><input id="ma" type="number" inputmode="numeric" placeholder="Amount (₦)"><input id="ms" placeholder="From (client, class…)"><button id="mb">Add</button></div>
+<div class="card"><div class="stat">This month: <b id="mt">₦0</b></div><div id="ml" class="mute"></div></div>
+<div class="row"><input id="mg" type="number" inputmode="numeric" placeholder="Monthly target (₦)"><button class="ghost" id="mgb">Set target</button></div>
+<div class="bar"><i id="mbar"></i></div>
+<p class="mute">Rule for every naira: living costs, business costs, savings (even 10%).</p>
+<h2>My data (JSON)</h2>
+<div class="card"><p class="mute">Your progress is stored as JSON on this device. Export it every Sunday and keep the file in Google Drive. Import it to restore on a new phone.</p>
+<div class="row"><button id="ex">Export progress</button><button class="ghost" id="imb">Import progress</button></div>
+<input type="file" id="imf" accept="application/json,.json" hidden><p class="mute" id="dmsg"></p></div>
+</section>
+
+<!-- OUTREACH -->
+<section class="view" id="v-out">
+<h2 id="ctitle">20 days to be found</h2>
+<div class="card hero"><p id="chook" class="say"></p><div class="bar"><i id="cbar"></i></div><p class="mute" id="ctxt"></p><button id="cstart">Start day 1 today</button></div>
+<div class="card" id="cl"></div>
+<h2>Message to copy</h2>
+<select id="tp"></select><pre id="msg"></pre><button id="cp">Copy message</button>
+<p class="mute">Send websites and video ads on different days so each message has one clear offer.</p>
+<h2>Where to reach buyers</h2>
+<div class="card"><h3>WhatsApp (first stop)</h3><p class="mute">Message owners you can reach directly. Send a short demo video with every message.</p></div>
+<div class="card"><h3>Walk-in with your phone</h3><p class="mute">Barbers, tailors, laundries, cleaners: show their business on a sample page in 60 seconds.</p></div>
+<div class="card"><h3>Google Maps and Facebook search</h3><p class="mute">Find local businesses with no website or a poor one. They are your list.</p></div>
+<div class="card"><h3>Facebook pages and groups</h3><p class="mute">Post demos on AISPOT. Join local business groups and give value before you pitch.</p></div>
+<div class="card"><h3>LinkedIn and X</h3><p class="mute">For schools, companies and your AI engineering growth. Share one thing you learned each week.</p></div>
+</section>
+
+<!-- LEARN -->
+<section class="view" id="v-learn">
+<h2>Today’s concept</h2>
+<div class="card hero"><span class="tag" id="ca"></span><h3 id="cn" style="margin-top:8px"></h3>
+<p class="say" id="cs"></p>
+<div class="row"><button id="said">I said it aloud</button><button class="ghost" id="nextc">Next concept</button></div>
+<p class="mute" id="saidt"></p>
+<textarea id="mn" rows="3" placeholder="Now say it in your own words, as if to a shop owner."></textarea>
+<div class="row"><button class="ghost" id="ms2">Save note</button></div><p class="mute" id="mnn"></p></div>
+<p class="mute">Method: read it, say it aloud twice without looking, then say it with your own example. Two minutes.</p>
+<h2>My path</h2>
+<div class="bar"><i id="lbar"></i></div><p class="mute" id="ltxt"></p>
+<div class="card" id="ll"></div>
+<h2>Concept library</h2>
+<select id="lf"></select><div class="card" id="lib"></div>
+<h2>Turn learning into income</h2>
+<ul class="q"><li>Each Friday, build one small thing from the week’s lesson: a WhatsApp bot, a form, a script that saves a client time.</li><li>Record a one-minute video of it working. That is your proof.</li><li>Offer it to one business that week.</li></ul>
+</section>
+
+<!-- PITCH -->
+<section class="view" id="v-pitch">
+<h2>My 30-second pitch</h2>
+<div class="card">
+<input id="p1" placeholder="Who I help (e.g. barbers in Makurdi)">
+<div class="row"><input id="p2" placeholder="Their problem (customers can’t find them)"></div>
+<div class="row"><input id="p3" placeholder="What I build (a website and an ad video)"></div>
+<div class="row"><input id="p4" placeholder="Price or offer (e.g. ₦20,000, half upfront)"></div>
+<div class="row"><button id="pb">Build pitch</button><button class="ghost" id="pt">Start 60s timer</button></div>
+<pre id="po">Fill the fields and tap Build pitch.</pre><p class="mute" id="tm"></p></div>
+<h2>Communication habits</h2>
+<ul class="q"><li>Say the result first: “I help you get more customers.” Then explain how.</li><li>One idea per sentence. Cut every word that does not help the listener.</li><li>Ask one question, then stop talking and listen.</li><li>Handle “it’s expensive” with “What would one new customer a week be worth to you?”</li><li>End with a next step and a time: “Can I send the sample today at 4pm?”</li><li>Practise out loud for 5 minutes daily. Record yourself.</li></ul>
+</section>
+
+<!-- QUOTES -->
+<section class="view" id="v-quotes">
+<h2>Quote library</h2><p class="mute">The quote at the top changes every day and loops through this list. Edit data.json on GitHub to add your own.</p>
+<div class="card"><ol id="qlist"></ol></div>
+</section>
+</main>
+
+<nav class="tabs" id="tabs">
+<a data-v="today" class="on" tabindex="0"><i>✅</i>Today</a><a data-v="goals" tabindex="0"><i>🎯</i>Goals</a><a data-v="out" tabindex="0"><i>📣</i>Outreach</a><a data-v="learn" tabindex="0"><i>🧠</i>Learn</a><a data-v="pitch" tabindex="0"><i>🎤</i>Pitch</a><a data-v="quotes" tabindex="0"><i>💬</i>Quotes</a>
+</nav>
+
+<script>
+(function(){
+var FB={quotes:[{t:"Send the message.",a:"Daily rule"}],messages:[{n:"Hook",t:"Hello, I’m Fafa from AISpot. Can customers find your business on Google? MAKE YOUR BUSINESS VISIBLE."}],campaign:{title:"20 days to be found",hook:"",days:[]},topics:[],concepts:[{a:"Python",n:"Functions",s:"A function takes inputs, does one job and returns an output."}]};
+var DB=FB,$=function(i){return document.getElementById(i)};
+var KEY="fafaBoard";
+var S={tasks:[],min:{d:"",out:0,post:0,study:0},days:[],ms:[],goal:0,learn:[],notes:{},theme:"",qoff:0,coff:0,said:{},camp:{start:"",done:[]},week:null};
+try{var raw=localStorage.getItem(KEY);if(raw){var o=JSON.parse(raw);for(var k in o)S[k]=o[k]}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function pad(n){return("0"+n).slice(-2)}
+function ds(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+function today(){return ds(new Date())}
+function doy(){var n=new Date(),s=new Date(n.getFullYear(),0,0);return Math.floor((n-s)/864e5)}
+function weekKey(){var d=new Date(),s=new Date(d.getFullYear(),0,1);return d.getFullYear()+"-"+Math.ceil(((d-s)/864e5+s.getDay()+1)/7)}
+function esc(t,n){var e=document.createElement(n||"span");e.textContent=t;return e}
+function rollover(){if(S.min.d!==today()){if(S.min.d&&S.min.out>=10&&S.min.post>=1&&S.min.study>=1&&S.days.indexOf(S.min.d)<0)S.days.push(S.min.d);S.min={d:today(),out:0,post:0,study:0};save()}}
+rollover();
+function wk(k){var w=weekKey();if(!S.week||S.week.k!==w)S.week={k:w,out:0,post:0,rep:0,meet:0,paid:0};S.week[k]=(S.week[k]||0)+1}
+// theme + header
+function applyTheme(){if(S.theme)document.documentElement.setAttribute("data-theme",S.theme);else document.documentElement.removeAttribute("data-theme")}
+applyTheme();
+$("theme").onclick=function(){var dark=S.theme?S.theme==="dark":window.matchMedia("(prefers-color-scheme:dark)").matches;S.theme=dark?"light":"dark";applyTheme();save()};
+var h=new Date().getHours();$("hi").textContent=(h<12?"Good morning":h<17?"Good afternoon":"Good evening")+", Fafa";
+$("date").textContent=new Date().toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+// tabs
+function go(v){document.querySelectorAll(".view").forEach(function(x){x.classList.toggle("on",x.id==="v-"+v)});document.querySelectorAll(".tabs a").forEach(function(a){a.classList.toggle("on",a.dataset.v===v)});window.scrollTo(0,0)}
+document.querySelectorAll(".tabs a").forEach(function(a){a.onclick=function(){go(a.dataset.v)};a.onkeydown=function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();go(a.dataset.v)}}});
+// quote
+function showQ(){var Q=DB.quotes,i=(doy()+S.qoff)%Q.length;$("qt").textContent="“"+Q[i].t+"”";$("qa").textContent=Q[i].a}
+// minimum
+function renderMin(){var m=S.min;$("c-out").textContent=m.out+"/10";$("c-post").textContent=m.post+"/1";$("c-study").textContent=m.study+"/1";
+$("t-out").classList.toggle("done",m.out>=10);$("t-post").classList.toggle("done",m.post>=1);$("t-study").classList.toggle("done",m.study>=1);
+var set={};S.days.forEach(function(x){set[x]=1});if(m.out>=10&&m.post>=1&&m.study>=1)set[today()]=1;
+var streak=0,d=new Date();for(;;){var key=ds(d);if(set[key]){streak++;d.setDate(d.getDate()-1)}else if(key===today()){d.setDate(d.getDate()-1)}else break}
+$("mintxt").textContent=(streak?"Streak: "+streak+" day"+(streak>1?"s":"")+" with the full minimum. ":"Finish all three to start a streak. ")+"Tired day? Do the minimum and keep going."}
+$("b-out").onclick=function(){S.min.out++;wk("out");save();renderMin();renderScore()};
+$("b-post").onclick=function(){S.min.post=1;wk("post");save();renderMin();renderScore()};
+$("b-study").onclick=function(){S.min.study=1;save();renderMin()};
+// tasks
+function renderTasks(){var box=$("tl");box.textContent="";var done=0;
+if(!S.tasks.length){var e=esc("No tasks yet. Add the one thing that would make today a good day.","p");e.className="mute";box.appendChild(e)}
+S.tasks.forEach(function(t,i){var r=document.createElement("div");r.className="todo"+(t.d?" d":"");
+var c=document.createElement("input");c.type="checkbox";c.checked=t.d;c.setAttribute("aria-label","Finished: "+t.t);c.onchange=function(){t.d=c.checked;save();renderTasks()};
+var g=esc(t.c);g.className="tag";var x=document.createElement("button");x.className="x";x.textContent="Delete";x.onclick=function(){S.tasks.splice(i,1);save();renderTasks()};
+r.appendChild(c);r.appendChild(esc(t.t));r.appendChild(g);r.appendChild(x);box.appendChild(r);if(t.d)done++});
+$("pbar").style.width=(S.tasks.length?Math.round(done/S.tasks.length*100):0)+"%";$("ptxt").textContent=S.tasks.length?done+" of "+S.tasks.length+" tasks done":""}
+$("ta").onclick=function(){var v=$("ti").value.trim();if(!v)return;S.tasks.push({t:v,c:$("tc").value,d:false});$("ti").value="";save();renderTasks()};
+$("ti").onkeydown=function(e){if(e.key==="Enter")$("ta").onclick()};
+$("clr").onclick=function(){S.tasks=S.tasks.filter(function(t){return!t.d});save();renderTasks()};
+// score
+function renderScore(){var w=weekKey();if(!S.week||S.week.k!==w)S.week={k:w,out:0,post:0,rep:0,meet:0,paid:0};var W=S.week,b=$("score");b.textContent="";
+[["out","Messages sent"],["rep","Replies"],["meet","Meetings"],["paid","Paid jobs"],["post","Posts"]].forEach(function(a){var c=document.createElement("div");c.className="card stat";var n=document.createElement("b");n.textContent=W[a[0]]||0;c.appendChild(n);c.appendChild(document.createElement("br"));c.appendChild(esc(a[1]));
+if(a[0]==="rep"||a[0]==="meet"||a[0]==="paid"){var p=document.createElement("button");p.className="ghost";p.textContent="+1";p.style.marginLeft="8px";p.onclick=function(){wk(a[0]);save();renderScore()};c.appendChild(p)}b.appendChild(c)})}
+// money
+function fmt(n){return"₦"+Number(n).toLocaleString("en-NG")}
+function renderMoney(){var mk=today().slice(0,7),tot=0,l=$("ml");l.textContent="";
+S.ms.filter(function(x){return x.d.slice(0,7)===mk}).forEach(function(x){tot+=x.a;l.appendChild(esc(x.d+" · "+fmt(x.a)+" · "+x.s,"div"))});
+$("mt").textContent=fmt(tot);$("mbar").style.width=(S.goal?Math.min(100,Math.round(tot/S.goal*100)):0)+"%"}
+$("mb").onclick=function(){var a=parseFloat($("ma").value);if(!a||a<=0)return;S.ms.push({d:today(),a:a,s:$("ms").value.trim()||"Income"});$("ma").value="";$("ms").value="";save();renderMoney()};
+$("mgb").onclick=function(){var g=parseFloat($("mg").value);if(g>0){S.goal=g;save();renderMoney()}};
+// export / import
+$("ex").onclick=function(){var b=new Blob([JSON.stringify(S,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="fafa-progress-"+today()+".json";document.body.appendChild(a);a.click();a.remove();$("dmsg").textContent="Exported. Save the file in Google Drive."};
+$("imb").onclick=function(){$("imf").click()};
+$("imf").onchange=function(){var f=this.files[0];if(!f)return;var r=new FileReader();r.onload=function(){try{var o=JSON.parse(r.result);if(!o||typeof o!=="object"||!Array.isArray(o.tasks))throw 0;for(var k in o)S[k]=o[k];save();renderAll();$("dmsg").textContent="Progress restored."}catch(e){$("dmsg").textContent="That file is not a valid progress file."}};r.readAsText(f)};
+// campaign + messages
+function renderCamp(){var C=DB.campaign,D=C.days,box=$("cl");$("ctitle").textContent=C.title;$("chook").textContent=C.hook;box.textContent="";
+var cur=0;if(S.camp.start){cur=Math.floor((new Date(today())-new Date(S.camp.start))/864e5)+1;if(cur>D.length)cur=D.length}
+var n=0;D.forEach(function(t,i){var r=document.createElement("div");var dn=S.camp.done.indexOf(i)>-1;r.className="todo"+(dn?" d":"")+(cur===i+1&&!dn?" now":"");
+var c=document.createElement("input");c.type="checkbox";c.checked=dn;c.setAttribute("aria-label","Day "+(i+1));c.onchange=function(){var p=S.camp.done.indexOf(i);if(c.checked&&p<0)S.camp.done.push(i);if(!c.checked&&p>-1)S.camp.done.splice(p,1);save();renderCamp()};
+var g=esc("Day "+(i+1));g.className="tag";r.appendChild(c);r.appendChild(g);r.appendChild(esc(t));box.appendChild(r);if(dn)n++});
+$("cbar").style.width=(D.length?Math.round(n/D.length*100):0)+"%";$("ctxt").textContent=S.camp.start?n+" of "+D.length+" days done. Today is day "+cur+".":"Start the clock when you are ready to send your first messages.";$("cstart").style.display=S.camp.start||!D.length?"none":"inline-block"}
+$("cstart").onclick=function(){S.camp.start=today();save();renderCamp()};
+function renderMsg(){var M=DB.messages,s=$("tp");if(!s.options.length){M.forEach(function(m,i){var o=document.createElement("option");o.value=i;o.textContent=m.n;s.appendChild(o)})}$("msg").textContent=M[s.value||0].t}
+$("tp").onchange=renderMsg;
+$("cp").onclick=function(){var t=DB.messages[$("tp").value||0].t;try{navigator.clipboard.writeText(t).then(function(){$("cp").textContent="Copied"},function(){$("cp").textContent="Press and hold the text to copy"})}catch(e){$("cp").textContent="Press and hold the text to copy"}setTimeout(function(){$("cp").textContent="Copy message"},2000)};
+// learn
+function cur(){var C=DB.concepts;return C[(doy()+S.coff)%C.length]}
+function renderConcept(){var c=cur();$("ca").textContent=c.a;$("cn").textContent=c.n;$("cs").textContent=c.s;$("mn").value=S.notes[today()]||"";
+var n=0;for(var k in S.said)n+=S.said[k];$("saidt").textContent=n?"You have said "+n+" concept"+(n>1?"s":"")+" aloud so far.":"Say it aloud, then tap the button."}
+$("said").onclick=function(){S.said[today()]=(S.said[today()]||0)+1;S.min.study=1;save();renderConcept();renderMin()};
+$("nextc").onclick=function(){S.coff++;save();renderConcept()};
+$("ms2").onclick=function(){S.notes[today()]=$("mn").value;save();$("mnn").textContent="Saved on this device."};
+function renderPath(){var box=$("ll");box.textContent="";var n=0;
+DB.topics.forEach(function(t,i){var r=document.createElement("div");r.className="todo"+(S.learn[i]?" d":"");var c=document.createElement("input");c.type="checkbox";c.checked=!!S.learn[i];c.setAttribute("aria-label",t);c.onchange=function(){S.learn[i]=c.checked;save();renderPath()};r.appendChild(c);r.appendChild(esc(t));box.appendChild(r);if(S.learn[i])n++});
+$("lbar").style.width=(DB.topics.length?Math.round(n/DB.topics.length*100):0)+"%";$("ltxt").textContent=n+" of "+DB.topics.length+" steps finished"}
+function renderLib(){var f=$("lf");if(!f.options.length){var seen={};["All"].concat(DB.concepts.map(function(c){return c.a})).forEach(function(a){if(seen[a])return;seen[a]=1;var o=document.createElement("option");o.textContent=a;f.appendChild(o)})}
+var box=$("lib");box.textContent="";DB.concepts.forEach(function(c){if(f.value!=="All"&&c.a!==f.value)return;var d=document.createElement("details"),s=document.createElement("summary");s.textContent=c.n;d.appendChild(s);var p=esc(c.s,"p");p.className="say";d.appendChild(p);box.appendChild(d)})}
+$("lf").onchange=renderLib;
+// pitch
+$("pb").onclick=function(){var a=$("p1").value.trim()||"[who I help]",b=$("p2").value.trim()||"[their problem]",c=$("p3").value.trim()||"[what I build]",d=$("p4").value.trim()||"[price or offer]";
+$("po").textContent="Hello, I’m Fafa. I help "+a+" who struggle with this: "+b+". I build "+c+", so customers find you and trust you. It costs "+d+". Can I send you a free sample today?"};
+var timer;$("pt").onclick=function(){clearInterval(timer);var s=60;$("tm").textContent="Speak now: 60s";timer=setInterval(function(){s--;$("tm").textContent=s>0?"Speak now: "+s+"s":"Time. Say it once more, shorter.";if(s<=0)clearInterval(timer)},1000)};
+$("qn").onclick=function(){S.qoff++;save();showQ()};
+function renderQuotes(){var l=$("qlist");l.textContent="";DB.quotes.forEach(function(q){l.appendChild(esc(q.t+" ("+q.a+")","li"))})}
+function renderAll(){applyTheme();showQ();renderMin();renderTasks();renderScore();renderMoney();renderCamp();renderMsg();renderConcept();renderPath();renderLib();renderQuotes()}
+function start(db,failed){DB=db;$("warn").hidden=!failed;renderAll()}
+fetch("data.json",{cache:"no-cache"}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){start(j,false)}).catch(function(){start(FB,true)});
+})();
+</script>
+</body>
+</html>
